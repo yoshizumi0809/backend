@@ -1,13 +1,17 @@
 import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { PostService } from './post.service';
 
-@Controller('post')
+@Controller('post') //「/post」というURLに関するリクエスト
 export class PostController {
+  //DIコンテナからpostServiceをインスタンス化せずにインポートできる。
   constructor(private readonly postService: PostService) {}
 
+  //「/post」というURLにPOSTメソッドを要求されたときの処理
   @Post()
   async createPost(
+    //const res = await axios.post(url, data)のdataがHTTPリクエストのボディ部分に存在
     @Body('message') message: string,
+    //URLのクエリパラメータからtoken変数を抜き出す。
     @Query('token') token: string,
   ) {
     return await this.postService.createPost(message, token);

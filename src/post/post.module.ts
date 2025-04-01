@@ -7,8 +7,15 @@ import { MicroPost } from '../entities/microposts.entity';
 import { Auth } from '../entities/auth.entity';
 
 @Module({
+  /* 
+  ・TypeOrmModule.forFeature() は、指定したエンティティのRepositoryをDIコンテナに登録 
+  →もっと厳密にいえば、@InjectRepository(MicroPost)など、@InjectRepository()
+  を使用できるようにする役割。
+  ・Repositoryとは？
+  →DBのレコード追加、検索など、レコード操作を簡単なコードでできるデータ型
+  */
   imports: [TypeOrmModule.forFeature([MicroPost, Auth])],
   controllers: [PostController],
-  providers: [PostService],
+  providers: [PostService], //providersに登録されたクラスはNestJSが自動的にインスタンス化
 })
 export class PostModule {}

@@ -4,9 +4,10 @@ import { Repository, Equal, MoreThan } from 'typeorm';
 import { MicroPost } from '../entities/microposts.entity';
 import { Auth } from '../entities/auth.entity';
 
-@Injectable()
+@Injectable() //このクラスがDIコンテナに登録される。
 export class PostService {
   constructor(
+    //MicroPostレポジトリを今から使いますよという宣言(注入)
     @InjectRepository(MicroPost)
     private microPostsRepository: Repository<MicroPost>,
     @InjectRepository(Auth)
@@ -14,10 +15,13 @@ export class PostService {
   ) {}
 
   async createPost(message: string, token: string) {
-    // ログイン済みかチェック
+    //現在の日時を取得
     const now = new Date();
+    //条件に一致する1件のレコードを取得(tokenのおかげで一意に定まる)
     const auth = await this.authRepository.findOne({
       where: {
+        //tokenはログイン時にユーザーが保持する文字列
+        //expire_atは、ログイン状態の有効期限
         token: Equal(token),
         expire_at: MoreThan(now),
       },
@@ -33,8 +37,8 @@ export class PostService {
     await this.microPostsRepository.save(record);
   }
 
+  //nr_recordsは表示できるレコード数
   async getList(token: string, start: number = 0, nr_records: number = 1) {
-    // ログイン済みかチェック
     const now = new Date();
     const auth = await this.authRepository.findOne({
       where: {
