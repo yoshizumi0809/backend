@@ -10,6 +10,6 @@ export class AuthController {
     @Query('user_id') name: string, //user_idのクエリパラメータをname変数に代入
     @Query('password') password: string, //passwordのクエリパラメータの値をpassword変数に代入
   ) {
-    return await this.authService.getAuth(name, password);
+    return await this.authService.getAuth(name, password); //nameとpasswordに対応するユーザーのユーザーID、トークンをプロパティとして持つオブジェクトを返却
   }
 }

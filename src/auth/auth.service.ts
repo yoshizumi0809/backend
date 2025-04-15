@@ -16,37 +16,39 @@ export class AuthService {
   ) {}
 
   async getAuth(name: string, password: string) {
-    // name,passwordからUserレコード検索
+    // パスワードが未入力なら即エラー（セキュリティ対策）
     if (!password) {
       throw new UnauthorizedException();
     }
-
+    //受け取ったパスワードをハッシュ化
     const hash = crypto.createHash('md5').update(password).digest('hex');
+    //ユーザーのデータベースからnameとhashが一致するレコードを検索し、userに(そのレコードを)代入
     const user = await this.userRepository.findOne({
       where: {
         name: Equal(name),
         hash: Equal(hash),
       },
     });
-
+    //見つからなければエラーを返す
     if (!user) {
       throw new UnauthorizedException();
     }
-
+    //トークンの返却用変数を準備
     const ret = { token: '', user_id: user.id };
-
-    const expire = new Date();
-    expire.setDate(expire.getDate() + 1);
-
+    // トークンの有効期限設定
+    const expire = new Date(); //現在時刻
+    expire.setDate(expire.getDate() + 1); //現在時刻から1日後
+    //ログインしようとしているユーザーのトークンが存在するか確認に、そのトークンをauthに代入
     const auth = await this.authRepository.findOne({
       where: { user_id: Equal(user.id) },
     });
 
     if (auth) {
-      auth.expire_at = expire;
+      auth.expire_at = expire; //authの有効期限を設定(延長)
       await this.authRepository.save(auth);
       ret.token = auth.token;
     } else {
+      //初ログイン（or以前のtokenが何らかの理由で消えた場合）
       const token = crypto.randomUUID();
       const record = {
         user_id: user.id,
