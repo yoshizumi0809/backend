@@ -36,6 +36,36 @@ export class PostService {
     };
     await this.microPostsRepository.save(record);
   }
+  //ポストを削除する関数
+  async deletePost(postId: number, token: string) {
+    //現在の日時を取得
+    const now = new Date();
+    //条件に一致する1件の「auth」レコードを取得(tokenのおかげで一意に定まる)
+    const auth = await this.authRepository.findOne({
+      where: {
+        //tokenはログイン時にユーザーが保持する文字列
+        //expire_atは、ログイン状態の有効期限
+        token: Equal(token),
+        expire_at: MoreThan(now),
+      },
+    });
+    if (!auth) {
+      throw new ForbiddenException();
+    }
+
+    const post = await this.microPostsRepository.findOne({
+      where: {
+        id: Equal(postId),
+        user_id: Equal(auth.user_id), // ← 他人の投稿を消せないようにチェック
+      },
+    });
+
+    if (!post) {
+      throw new ForbiddenException('この投稿は削除できません');
+    }
+    //post.idとidが一致するポストを削除する
+    await this.microPostsRepository.delete(post.id);
+  }
 
   //nr_recordsは表示できるレコード数
   async getList(token: string, start: number = 0, nr_records: number = 1) {

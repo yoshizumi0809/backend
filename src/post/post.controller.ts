@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  Delete,
+  Param,
+} from '@nestjs/common';
 import { PostService } from './post.service';
 
 @Controller('post') //「/post」というURLに関するリクエスト
@@ -24,5 +32,11 @@ export class PostController {
     @Query('records') records: number,
   ) {
     return await this.postService.getList(token, start, records);
+  }
+
+  @Delete(':id')
+  async deletePost(@Param('id') id: string, @Query('token') token: string) {
+    await this.postService.deletePost(Number(id), token);
+    return { message: '投稿を削除しました' };
   }
 }
