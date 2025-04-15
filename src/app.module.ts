@@ -6,7 +6,6 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { PostModule } from './post/post.module';
 import { AuthModule } from './auth/auth.module';
-import { PostdeleteModule } from './postdelete/postdelete.module';
 
 @Module({
   imports: [
@@ -23,7 +22,6 @@ import { PostdeleteModule } from './postdelete/postdelete.module';
     UserModule,
     PostModule,
     AuthModule,
-    PostdeleteModule,
   ],
   controllers: [AppController],
   providers: [AppService],
