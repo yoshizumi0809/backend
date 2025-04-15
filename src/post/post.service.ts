@@ -58,9 +58,9 @@ export class PostService {
         'micro_post.content as content',
         'micro_post.created_at as created_at',
       ])
-      .orderBy('micro_post.created_at', 'DESC')
-      .offset(start)
-      .limit(nr_records);
+      .orderBy('micro_post.created_at', 'DESC') //投稿日時の新しい順に並べる
+      .offset(start) //何件目から取得するか
+      .limit(nr_records); //最大何件取得するか
     type ResultType = {
       id: number;
       content: string;
