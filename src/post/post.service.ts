@@ -101,4 +101,40 @@ export class PostService {
     console.log(records);
     return records;
   }
+
+  async getAllPosts(token: string) {
+    const now = new Date();
+    const auth = await this.authRepository.findOne({
+      where: {
+        token: Equal(token),
+        expire_at: MoreThan(now),
+      },
+    });
+
+    if (!auth) {
+      throw new ForbiddenException();
+    }
+
+    const qb = this.microPostsRepository
+      .createQueryBuilder('micro_post')
+      .leftJoinAndSelect('user', 'user', 'user.id = micro_post.user_id')
+      .select([
+        'micro_post.id as id',
+        'user.name as user_name',
+        'micro_post.content as content',
+        'micro_post.created_at as created_at',
+      ])
+      .orderBy('micro_post.created_at', 'DESC'); // ← 全件取得なので offset, limit は不要
+
+    type ResultType = {
+      id: number;
+      content: string;
+      user_name: string;
+      created_at: Date;
+    };
+
+    const records = await qb.getRawMany<ResultType>();
+    console.log('[getAllPosts] 投稿全件数:', records.length);
+    return records;
+  }
 }

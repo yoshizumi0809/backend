@@ -34,6 +34,11 @@ export class PostController {
     return await this.postService.getList(token, start, records);
   }
 
+  @Get('all')
+  async getAllPosts(@Query('token') token: string) {
+    return await this.postService.getAllPosts(token); // ← Service側も用意
+  }
+
   @Delete(':id')
   async deletePost(@Param('id') id: string, @Query('token') token: string) {
     await this.postService.deletePost(Number(id), token);
