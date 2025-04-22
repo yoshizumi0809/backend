@@ -18,7 +18,7 @@ export class User {
   hash: string;
 
   @Column('varchar')
-  umail: string;
+  email: string;
 
   @CreateDateColumn()
   readonly created_at?: Date;
