@@ -42,13 +42,32 @@ export class UserService {
     return user;
   }
 
-  createUser(name: string, email: string, password: string) {
+  async createUser(name: string, email: string, password: string) {
+    const now = new Date();
+    const isExistName = await this.userRepository.findOne({
+      where: {
+        name: Equal(name),
+      },
+    });
+    if (isExistName) {
+      throw new Error('ユーザー名は既に使われています');
+    }
+    const isExistEmail = await this.userRepository.findOne({
+      where: {
+        email: Equal(email),
+      },
+    });
+    if (isExistEmail) {
+      throw new Error('メールアドレスは既に使われています');
+    }
     const hash = createHash('md5').update(password).digest('hex');
     const record = {
       name: name,
       email: email,
       hash: hash,
+      created_at: now,
     };
-    this.userRepository.save(record);
+    await this.userRepository.save(record);
+    return { message: '登録完了', user_id: record.name };
   }
 }
