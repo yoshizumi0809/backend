@@ -2,6 +2,8 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { createHash } from 'crypto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -50,7 +52,10 @@ export class UserService {
       },
     });
     if (isExistName) {
-      throw new Error('ユーザー名は既に使われています');
+      throw new HttpException(
+        'ユーザー名は既に使われています',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const isExistEmail = await this.userRepository.findOne({
       where: {
@@ -58,7 +63,10 @@ export class UserService {
       },
     });
     if (isExistEmail) {
-      throw new Error('メールアドレスは既に使われています');
+      throw new HttpException(
+        'メールアドレスは既に使われています',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const hash = createHash('md5').update(password).digest('hex');
     const record = {

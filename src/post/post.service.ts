@@ -85,6 +85,7 @@ export class PostService {
       .select([
         'micro_post.id as id',
         'user.name as user_name',
+        'micro_post.user_id as user_id',
         'micro_post.content as content',
         'micro_post.created_at as created_at',
       ])
@@ -95,6 +96,7 @@ export class PostService {
       id: number;
       content: string;
       user_name: string;
+      user_id: number;
       created_at: Date;
     };
     const records = await qb.getRawMany<ResultType>();
