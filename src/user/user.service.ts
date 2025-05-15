@@ -44,6 +44,20 @@ export class UserService {
     return user;
   }
 
+  // user.service.ts
+  async getUserInfo(id: number) {
+    const user = await this.userRepository.findOne({
+      where: { id: id },
+      select: ['id', 'name'], // ← 公開してよい情報だけ
+    });
+
+    if (!user) {
+      throw new NotFoundException(`ユーザーID ${id} が見つかりません`);
+    }
+
+    return user;
+  }
+
   async createUser(name: string, email: string, password: string) {
     const now = new Date();
     const isExistName = await this.userRepository.findOne({
