@@ -2,6 +2,7 @@ import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
+//TypeORMがデータベースと接続するための「設定オブジェクト」
 const AppDataSource = new DataSource({
   type: 'mysql', // データベースの種別を MySQL に変更
   host: process.env.DB_HOST,

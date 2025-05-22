@@ -1,15 +1,15 @@
 import {
   Entity,
   Column,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
-  readonly id: number;
+  @PrimaryColumn('varchar')
+  id: string;
 
   @Column('varchar')
   name: string;
