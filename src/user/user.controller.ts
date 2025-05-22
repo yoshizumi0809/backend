@@ -16,13 +16,13 @@ export class UserController {
   }
 
   @Get(':id')
-  async getUser(@Param('id') id: number, @Query('token') token: string) {
+  async getUser(@Param('id') id: string, @Query('token') token: string) {
     return await this.userService.getUser(token, id);
   }
 
   // user.controller.ts
   @Get('info/:id')
-  getUserInfo(@Param('id') id: number) {
+  getUserInfo(@Param('id') id: string) {
     return this.userService.getUserInfo(id);
   }
 }

@@ -20,7 +20,7 @@ export class UserService {
     private authRepository: Repository<Auth>,
   ) {}
 
-  async getUser(token: string, id: number) {
+  async getUser(token: string, id: string) {
     // ログイン済みかチェック
     const now = new Date();
     const auth = await this.authRepository.findOne({
@@ -45,7 +45,7 @@ export class UserService {
   }
 
   // user.service.ts
-  async getUserInfo(id: number) {
+  async getUserInfo(id: string) {
     const user = await this.userRepository.findOne({
       where: { id: id },
       select: ['id', 'name'], // ← 公開してよい情報だけ
