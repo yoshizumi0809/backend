@@ -9,6 +9,13 @@ const AppDataSource = new DataSource({
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
   port: parseInt(process.env.DB_PORT || '3306'), // MySQLのポート番号。デフォルトは3306
+  ssl: {
+    rejectUnauthorized: false, //← 自己署名 CA なので検証 OFF
+  },
+  extra: {
+    //← mysql2 ドライバ用
+    ssl: { rejectUnauthorized: false },
+  },
   entities: ['src/entities/*.ts'], // エンティティファイルのパス
   migrations: ['src/migrations/*.ts'], // マイグレーションファイルのパス
   charset: 'utf8mb4', // MySQLの文字コード設定（任意）
