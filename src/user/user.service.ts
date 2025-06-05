@@ -48,7 +48,7 @@ export class UserService {
   async getUserInfo(id: number) {
     const user = await this.userRepository.findOne({
       where: { id: id },
-      select: ['id', 'name'], // ← 公開してよい情報だけ
+      select: ['id', 'name', 'user_id'], // ← 公開してよい情報だけ
     });
 
     if (!user) {
