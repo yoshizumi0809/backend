@@ -34,7 +34,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
     //トークンの返却用変数を準備
-    const ret = { token: '', id: user.id };
+    const ret = { token: '', id: user.id, firstLogin: false };
     // トークンの有効期限設定
     const expire = new Date(); //現在時刻
     expire.setDate(expire.getDate() + 1); //現在時刻から1日後
@@ -57,6 +57,7 @@ export class AuthService {
       };
       await this.authRepository.save(record);
       ret.token = token;
+      ret.firstLogin = true;
     }
 
     return ret;
