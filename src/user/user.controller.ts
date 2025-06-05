@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Query, Body } from '@nestjs/common';
+import { Controller, Get, Post, Param, Query, Body, Put } from '@nestjs/common';
 
 import { UserService } from './user.service';
 
@@ -16,13 +16,21 @@ export class UserController {
   }
 
   @Get(':id')
-  async getUser(@Param('id') id: string, @Query('token') token: string) {
+  async getUser(@Param('id') id: number, @Query('token') token: string) {
     return await this.userService.getUser(token, id);
   }
 
   // user.controller.ts
   @Get('info/:id')
-  getUserInfo(@Param('id') id: string) {
+  getUserInfo(@Param('id') id: number) {
     return this.userService.getUserInfo(id);
+  }
+
+  @Put(':id')
+  async editUser(
+    @Param('id') id: number,
+    @Body() body: { user_id?: string; name?: string },
+  ) {
+    return await this.userService.editUser(id, body);
   }
 }

@@ -20,7 +20,7 @@ export class UserService {
     private authRepository: Repository<Auth>,
   ) {}
 
-  async getUser(token: string, id: string) {
+  async getUser(token: string, id: number) {
     // ログイン済みかチェック
     const now = new Date();
     const auth = await this.authRepository.findOne({
@@ -45,7 +45,7 @@ export class UserService {
   }
 
   // user.service.ts
-  async getUserInfo(id: string) {
+  async getUserInfo(id: number) {
     const user = await this.userRepository.findOne({
       where: { id: id },
       select: ['id', 'name'], // ← 公開してよい情報だけ
@@ -91,5 +91,14 @@ export class UserService {
     };
     await this.userRepository.save(record);
     return { message: '登録完了', user_id: record.name };
+  }
+
+  async editUser(id: number, updates: { user_id?: string; name?: string }) {
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) throw new NotFoundException('User not found');
+    if (updates.user_id !== undefined) user.user_id = updates.user_id;
+    if (updates.name !== undefined) user.name = updates.name;
+    await this.userRepository.save(user);
+    return user;
   }
 }

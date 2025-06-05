@@ -12,7 +12,7 @@ export class Auth {
   readonly id: number;
 
   @Column()
-  user_id: string;
+  user_id: number;
 
   @Column('varchar')
   token: string;

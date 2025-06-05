@@ -12,7 +12,7 @@ export class MicroPost {
   readonly id: number;
 
   @Column()
-  user_id: string;
+  user_id: number;
 
   @Column()
   content: string;
