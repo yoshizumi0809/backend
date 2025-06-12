@@ -2,6 +2,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { CLOUDINARY } from './constants';
 import { v2 as Cloudinary } from 'cloudinary';
 import toStream from 'buffer-to-stream';
+import type { Express } from 'express'; // ← 型だけ import
 
 @Injectable()
 export class CloudinaryService {
@@ -16,7 +17,10 @@ export class CloudinaryService {
           resolve(result);
         },
       );
-      (toStream as (input: Buffer) => NodeJS.ReadableStream)(file.buffer).pipe(
+
+      /** ★ ここだけ変更（型を明示した変数を経由） */
+      const buffer: Buffer = (file as unknown as { buffer: Buffer }).buffer;
+      (toStream as (input: Buffer) => NodeJS.ReadableStream)(buffer).pipe(
         upload,
       );
     });

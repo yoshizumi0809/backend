@@ -23,6 +23,9 @@ export class User {
   @Column('varchar')
   email: string;
 
+  @Column('varchar')
+  icon_url: string; //画像のurl
+
   @CreateDateColumn()
   readonly created_at?: Date;
 

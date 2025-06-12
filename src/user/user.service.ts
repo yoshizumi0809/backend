@@ -48,7 +48,7 @@ export class UserService {
   async getUserInfo(id: number) {
     const user = await this.userRepository.findOne({
       where: { id: id },
-      select: ['id', 'name', 'user_id'], // ← 公開してよい情報だけ
+      select: ['id', 'name', 'user_id', 'icon_url'],
     });
 
     if (!user) {
@@ -87,11 +87,14 @@ export class UserService {
 
     // ── 2. ユーザーレコードを作成 ─────────────
     const hash = createHash('md5').update(password).digest('hex');
+    const InitialIconUrl =
+      'https://res.cloudinary.com/dqyq4u6ct/image/upload/v1749706764/initial_icon_yl0ikg.webp';
     const user = this.userRepository.create({
       user_id,
       name,
       email,
       hash,
+      icon_url: InitialIconUrl,
       created_at: new Date(),
     });
     await this.userRepository.save(user);
