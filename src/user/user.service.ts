@@ -119,11 +119,15 @@ export class UserService {
     };
   }
 
-  async editUser(id: number, updates: { user_id?: string; name?: string }) {
+  async editUser(
+    id: number,
+    updates: { user_id?: string; name?: string; icon_url?: string },
+  ) {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) throw new NotFoundException('User not found');
     if (updates.user_id !== undefined) user.user_id = updates.user_id;
     if (updates.name !== undefined) user.name = updates.name;
+    if (updates.icon_url !== undefined) user.icon_url = updates.icon_url;
     await this.userRepository.save(user);
     return user;
   }

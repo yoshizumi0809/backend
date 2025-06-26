@@ -30,7 +30,7 @@ export class UserController {
   @Put(':id')
   async editUser(
     @Param('id') id: number,
-    @Body() body: { user_id?: string; name?: string },
+    @Body() body: { user_id?: string; name?: string; icon_url?: string },
   ) {
     return await this.userService.editUser(id, body);
   }
