@@ -5,7 +5,7 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { createHash } from 'crypto';
+import { createHash, randomUUID } from 'crypto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Equal, MoreThan } from 'typeorm';
 import { User } from '../entities/user.entity';
@@ -20,77 +20,59 @@ export class UserService {
     private authRepository: Repository<Auth>,
   ) {}
 
-  async getUser(token: string, id: number) {
-    // ログイン済みかチェック
+  /* ──────────── 1. ログイン中ユーザー取得 ──────────── */
+  async getUser(token: string, user_id: number) {
     const now = new Date();
     const auth = await this.authRepository.findOne({
-      where: {
-        token: Equal(token),
-        expire_at: MoreThan(now),
-      },
+      where: { token: Equal(token), expire_at: MoreThan(now) },
     });
-    if (!auth) {
-      throw new ForbiddenException();
-    }
+    if (!auth) throw new ForbiddenException();
 
     const user = await this.userRepository.findOne({
-      where: {
-        id: Equal(id),
-      },
+      where: { user_id: Equal(user_id) }, // ← id から user_id に
     });
-    if (!user) {
-      throw new NotFoundException();
-    }
+    if (!user) throw new NotFoundException();
     return user;
   }
 
-  // user.service.ts
-  async getUserInfo(id: number) {
+  /* ──────────── 2. 公開プロフィール取得 ──────────── */
+  async getUserInfo(user_id: number) {
     const user = await this.userRepository.findOne({
-      where: { id: id },
-      select: ['id', 'name', 'user_id', 'icon_url'],
+      where: { user_id },
+      select: ['user_id', 'login_id', 'name', 'icon_url'], // ← select 名称変更
     });
-
-    if (!user) {
-      throw new NotFoundException(`ユーザーID ${id} が見つかりません`);
-    }
-
+    if (!user)
+      throw new NotFoundException(`ユーザーID ${user_id} が見つかりません`);
     return user;
   }
 
+  /* ──────────── 3. 新規ユーザー登録 ──────────── */
   async createUser(
-    name: string, // ← 表示名
-    user_id: string, // ← 公開 ID (@happycat123 など)
+    name: string, // 表示名
+    login_id: string, // 公開ID (@happycat123 等)
     email: string,
     password: string,
   ) {
-    // ── 1. 重複チェック ─────────────────────
-    const dupId = await this.userRepository.findOne({
-      where: { user_id: Equal(user_id) },
-    });
-    if (dupId) {
+    /* 重複チェック */
+    if (await this.userRepository.findOne({ where: { login_id } })) {
       throw new HttpException(
-        'ユーザーIDは既に使われています',
+        'ログインIDは既に使われています',
         HttpStatus.BAD_REQUEST,
       );
     }
-
-    const dupEmail = await this.userRepository.findOne({
-      where: { email: Equal(email) },
-    });
-    if (dupEmail) {
+    if (await this.userRepository.findOne({ where: { email } })) {
       throw new HttpException(
         'メールアドレスは既に使われています',
         HttpStatus.BAD_REQUEST,
       );
     }
 
-    // ── 2. ユーザーレコードを作成 ─────────────
+    /* ユーザーレコード作成 */
     const hash = createHash('md5').update(password).digest('hex');
     const InitialIconUrl =
       'https://res.cloudinary.com/dqyq4u6ct/image/upload/v1749706764/initial_icon_yl0ikg.webp';
     const user = this.userRepository.create({
-      user_id,
+      login_id,
       name,
       email,
       hash,
@@ -99,10 +81,10 @@ export class UserService {
     });
     await this.userRepository.save(user);
 
-    // ── 3. トークン発行 & 保存 ────────────────
-    const token = crypto.randomUUID();
+    /* トークン発行 & 保存 */
+    const token = randomUUID();
     await this.authRepository.save({
-      user_id: user.id, // Auth エンティティの外部キー
+      user_id: user.user_id, // ← 主キー (number)
       token,
       expire_at: (() => {
         const d = new Date();
@@ -111,23 +93,26 @@ export class UserService {
       })(),
     });
 
-    // ── 4. フロントへ返す ────────────────────
+    /* フロントへ返却 */
     return {
-      id: user.id,
+      id: user.user_id, // ← 主キー (number)
       token,
       message: '登録完了',
     };
   }
 
+  /* ──────────── 4. プロフィール編集 ──────────── */
   async editUser(
-    id: number,
-    updates: { user_id?: string; name?: string; icon_url?: string },
+    user_id: number,
+    updates: { login_id?: string; name?: string; icon_url?: string },
   ) {
-    const user = await this.userRepository.findOneBy({ id });
+    const user = await this.userRepository.findOneBy({ user_id });
     if (!user) throw new NotFoundException('User not found');
-    if (updates.user_id !== undefined) user.user_id = updates.user_id;
+
+    if (updates.login_id !== undefined) user.login_id = updates.login_id;
     if (updates.name !== undefined) user.name = updates.name;
     if (updates.icon_url !== undefined) user.icon_url = updates.icon_url;
+
     await this.userRepository.save(user);
     return user;
   }

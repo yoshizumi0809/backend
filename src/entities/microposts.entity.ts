@@ -9,10 +9,13 @@ import {
 @Entity()
 export class MicroPost {
   @PrimaryGeneratedColumn()
-  readonly id: number;
+  readonly post_id: number;
 
   @Column()
   user_id: number;
+
+  @Column()
+  login_id: string;
 
   @Column()
   content: string;

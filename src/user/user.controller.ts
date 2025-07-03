@@ -22,9 +22,9 @@ export class UserController {
   }
 
   // user.controller.ts
-  @Get('info/:id')
-  getUserInfo(@Param('id') id: number) {
-    return this.userService.getUserInfo(id);
+  @Get('info/:user_id')
+  getUserInfo(@Param('user_id') user_id: number) {
+    return this.userService.getUserInfo(user_id);
   }
 
   @Put(':id')

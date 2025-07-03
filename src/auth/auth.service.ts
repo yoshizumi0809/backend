@@ -15,7 +15,7 @@ export class AuthService {
     private authRepository: Repository<Auth>,
   ) {}
 
-  async getAuth(user_id: string, password: string) {
+  async getAuth(login_id: string, password: string) {
     // パスワードが未入力なら即エラー（セキュリティ対策）
     if (!password) {
       throw new UnauthorizedException();
@@ -25,7 +25,7 @@ export class AuthService {
     //ユーザーのデータベースからnameとhashが一致するレコードを検索し、userに(そのレコードを)代入
     const user = await this.userRepository.findOne({
       where: {
-        user_id: Equal(user_id),
+        login_id: Equal(login_id),
         hash: Equal(hash),
       },
     });
@@ -34,13 +34,13 @@ export class AuthService {
       throw new UnauthorizedException();
     }
     //トークンの返却用変数を準備
-    const ret = { token: '', id: user.id };
+    const ret = { token: '', user_id: user.user_id };
     // トークンの有効期限設定
     const expire = new Date(); //現在時刻
     expire.setDate(expire.getDate() + 1); //現在時刻から1日後
     //ログインしようとしているユーザーのトークンが存在するか確認に、そのトークンをauthに代入
     const auth = await this.authRepository.findOne({
-      where: { id: Equal(user.id) },
+      where: { user_id: Equal(user.user_id) },
     });
 
     if (auth) {
@@ -51,7 +51,7 @@ export class AuthService {
       //初ログイン（or以前のtokenが何らかの理由で消えた場合）
       const token = crypto.randomUUID();
       const record = {
-        id: user.id,
+        user_id: user.user_id,
         token: token,
         expire_at: expire.toISOString(),
       };

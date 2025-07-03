@@ -5,6 +5,7 @@ import { PostService } from './post.service';
 import { MicroPost } from '../entities/microposts.entity';
 //import { AuthModule } from 'src/auth/auth.module';
 import { Auth } from '../entities/auth.entity';
+import { User } from 'src/entities/user.entity';
 
 @Module({
   /* 
@@ -14,7 +15,7 @@ import { Auth } from '../entities/auth.entity';
   ・Repositoryとは？
   →DBのレコード追加、検索など、レコード操作を簡単なコードでできるデータ型
   */
-  imports: [TypeOrmModule.forFeature([MicroPost, Auth])],
+  imports: [TypeOrmModule.forFeature([MicroPost, Auth, User])],
   controllers: [PostController],
   providers: [PostService], //providersに登録されたクラスはNestJSが自動的にインスタンス化
 })
