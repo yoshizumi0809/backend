@@ -27,6 +27,11 @@ export class UserController {
     return this.userService.getUserInfo(user_id);
   }
 
+  @Get('idTologin/:login_id')
+  getUserIdByLoginId(@Param('login_id') login_id: string) {
+    return this.userService.getUserIdByLoginId(login_id);
+  }
+
   @Put(':id')
   async editUser(
     @Param('id') id: number,

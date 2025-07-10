@@ -39,11 +39,20 @@ export class UserService {
   async getUserInfo(user_id: number) {
     const user = await this.userRepository.findOne({
       where: { user_id },
-      select: ['user_id', 'login_id', 'name', 'icon_url'], // ← select 名称変更
+      select: ['user_id', 'login_id', 'name', 'email', 'icon_url'], // ← select 名称変更
     });
     if (!user)
       throw new NotFoundException(`ユーザーID ${user_id} が見つかりません`);
     return user;
+  }
+
+  async getUserIdByLoginId(login_id: string): Promise<number> {
+    const user = await this.userRepository.findOne({
+      where: { login_id },
+      select: ['user_id'], // 必要なカラムだけ返す
+    });
+    if (!user) throw new NotFoundException();
+    return user.user_id;
   }
 
   /* ──────────── 3. 新規ユーザー登録 ──────────── */
