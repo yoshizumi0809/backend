@@ -3,14 +3,14 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const port = process.env.PORT || 3001; // 環境変数から使用ポートを取得
+  const port = process.env.PORT || 3001;
+
   app.enableCors({
-    origin: '*',
-    allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept',
+    origin: ['https://frontend-623f.onrender.com'],
+    credentials: true,
   });
-  console.log(`linstening on port ${port}`);
+
+  console.log(`listening on port ${port}`);
   await app.listen(port, '0.0.0.0');
 }
 bootstrap();
-
-//test
