@@ -12,7 +12,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
   imports: [
     ConfigModule.forRoot(), // ✅ 追加
     TypeOrmModule.forRoot({
-      type: 'mysql',
+      type: 'postgres',
       host: process.env.DB_HOST,
       username: process.env.DB_USER,
       password: process.env.DB_PASS,
