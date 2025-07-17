@@ -116,19 +116,21 @@ export class PostService {
       .leftJoinAndSelect(
         'user',
         'user',
-        'user.user_id = micro_post.user_id', // ← 同上
+        'user.user_id = micro_post.user_id', //
       )
       .select([
-        'micro_post.post_id as id', // ← 主キー名修正
+        'micro_post.post_id as id',
         'user.name as user_name',
+        'user.user_id as user_id',
         'micro_post.content as content',
         'micro_post.created_at as created_at',
       ])
-      .orderBy('micro_post.created_at', 'DESC'); // 全件取得なので offset/limit 不要
+      .orderBy('micro_post.created_at', 'DESC');
 
     type ResultType = {
       id: number;
       content: string;
+      user_id: number;
       user_name: string;
       created_at: Date;
     };

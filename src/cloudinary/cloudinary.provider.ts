@@ -1,13 +1,15 @@
+// src/cloudinary/cloudinary.provider.ts
 import { v2 as cloudinary } from 'cloudinary';
 import { CLOUDINARY } from './constants';
 
 export const CloudinaryProvider = {
   provide: CLOUDINARY,
   useFactory: () => {
-    return cloudinary.config({
-      cloud_name: 'dqyq4u6ct',
-      api_key: '985126979781965',
-      api_secret: 'RK6fzKAh_WQOgiFHbg-AMnCibZ0',
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME, // .env から読むのが安全
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
     });
+    return cloudinary; // ← これを返す！
   },
 };

@@ -32,11 +32,11 @@ export class UserController {
     return this.userService.getUserIdByLoginId(login_id);
   }
 
-  @Put(':id')
+  @Put(':user_id')
   async editUser(
-    @Param('id') id: number,
-    @Body() body: { user_id?: string; name?: string; icon_url?: string },
+    @Param('user_id') user_id: number,
+    @Body() body: { login_id?: string; name?: string; icon_url?: string },
   ) {
-    return await this.userService.editUser(id, body);
+    return await this.userService.editUser(user_id, body);
   }
 }

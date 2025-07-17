@@ -104,7 +104,7 @@ export class UserService {
 
     /* フロントへ返却 */
     return {
-      id: user.user_id, // ← 主キー (number)
+      user_id: user.user_id, // ← 主キー (number)
       token,
       message: '登録完了',
     };
