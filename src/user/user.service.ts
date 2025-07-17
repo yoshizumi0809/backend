@@ -20,7 +20,6 @@ export class UserService {
     private authRepository: Repository<Auth>,
   ) {}
 
-  /* ──────────── 1. ログイン中ユーザー取得 ──────────── */
   async getUser(token: string, user_id: number) {
     const now = new Date();
     const auth = await this.authRepository.findOne({
@@ -29,13 +28,12 @@ export class UserService {
     if (!auth) throw new ForbiddenException();
 
     const user = await this.userRepository.findOne({
-      where: { user_id: Equal(user_id) }, // ← id から user_id に
+      where: { user_id: Equal(user_id) },
     });
     if (!user) throw new NotFoundException();
     return user;
   }
 
-  /* ──────────── 2. 公開プロフィール取得 ──────────── */
   async getUserInfo(user_id: number) {
     const user = await this.userRepository.findOne({
       where: { user_id },
@@ -49,20 +47,18 @@ export class UserService {
   async getUserIdByLoginId(login_id: string): Promise<number> {
     const user = await this.userRepository.findOne({
       where: { login_id },
-      select: ['user_id'], // 必要なカラムだけ返す
+      select: ['user_id'],
     });
     if (!user) throw new NotFoundException();
     return user.user_id;
   }
 
-  /* ──────────── 3. 新規ユーザー登録 ──────────── */
   async createUser(
     name: string, // 表示名
     login_id: string, // 公開ID (@happycat123 等)
     email: string,
     password: string,
   ) {
-    /* 重複チェック */
     if (await this.userRepository.findOne({ where: { login_id } })) {
       throw new HttpException(
         'ログインIDは既に使われています',
@@ -76,7 +72,6 @@ export class UserService {
       );
     }
 
-    /* ユーザーレコード作成 */
     const hash = createHash('md5').update(password).digest('hex');
     const InitialIconUrl =
       'https://res.cloudinary.com/dqyq4u6ct/image/upload/v1749706764/initial_icon_yl0ikg.webp';
@@ -90,10 +85,9 @@ export class UserService {
     });
     await this.userRepository.save(user);
 
-    /* トークン発行 & 保存 */
     const token = randomUUID();
     await this.authRepository.save({
-      user_id: user.user_id, // ← 主キー (number)
+      user_id: user.user_id,
       token,
       expire_at: (() => {
         const d = new Date();
@@ -102,15 +96,13 @@ export class UserService {
       })(),
     });
 
-    /* フロントへ返却 */
     return {
-      user_id: user.user_id, // ← 主キー (number)
+      user_id: user.user_id,
       token,
       message: '登録完了',
     };
   }
 
-  /* ──────────── 4. プロフィール編集 ──────────── */
   async editUser(
     user_id: number,
     updates: { login_id?: string; name?: string; icon_url?: string },

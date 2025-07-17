@@ -12,25 +12,14 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
-    // .env を読むのは開発時だけ。本番(Render)では
-    // Environment タブの変数がそのまま注入されます
     ConfigModule.forRoot(),
-
-    /** ────────────★ ここを修正 ★──────────── */
     TypeOrmModule.forRoot({
       type: 'postgres',
-      // DATABASE_URL を 1 行で渡す
       url: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false }, // Render Free/Postgres で必須
-
-      // 自動で Entity を読み込む
+      ssl: { rejectUnauthorized: false },
       autoLoadEntities: true,
-
-      // 本番は false。ローカル開発は .env で NODE_ENV=development なら
-      // synchronize: true にしても良い
       synchronize: false,
     }),
-    /** ───────────────────────────────────── */
 
     UserModule,
     PostModule,
