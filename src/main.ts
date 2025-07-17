@@ -7,6 +7,7 @@ async function bootstrap() {
 
   app.enableCors({
     origin: ['https://frontend-623f.onrender.com'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], // ←これ追加！
     credentials: true,
   });
 
