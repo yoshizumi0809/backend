@@ -1,6 +1,8 @@
+// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config'; // ✅ 追加
+import { ConfigModule } from '@nestjs/config';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
@@ -10,17 +12,26 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(), // ✅ 追加
+    // .env を読むのは開発時だけ。本番(Render)では
+    // Environment タブの変数がそのまま注入されます
+    ConfigModule.forRoot(),
+
+    /** ────────────★ ここを修正 ★──────────── */
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DB_HOST,
-      port: 5432,
-      username: process.env.DB_USER,
-      password: process.env.DB_PASS,
-      database: process.env.DB_NAME,
+      // DATABASE_URL を 1 行で渡す
+      url: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false }, // Render Free/Postgres で必須
+
+      // 自動で Entity を読み込む
       autoLoadEntities: true,
+
+      // 本番は false。ローカル開発は .env で NODE_ENV=development なら
+      // synchronize: true にしても良い
       synchronize: false,
     }),
+    /** ───────────────────────────────────── */
+
     UserModule,
     PostModule,
     AuthModule,
