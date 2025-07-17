@@ -9,11 +9,11 @@ export class UserController {
   @Post()
   createUser(
     @Body('name') name: string,
-    @Body('user_id') user_id: string,
+    @Body('login_id') login_id: string,
     @Body('email') email: string,
     @Body('password') password: string,
   ) {
-    return this.userService.createUser(name, user_id, email, password);
+    return this.userService.createUser(name, login_id, email, password);
   }
 
   @Get(':id')
